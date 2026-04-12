@@ -49,6 +49,15 @@ end = struct
     }
 end
 
+(* P × Q^P → Q *)
+module Cartesian_eval (P : Polynomial) (Q : Polynomial) = struct
+  module PQ = Cartesian_closure (Q) (P)
+  module Prod = Cartesian_product (P) (PQ)
+
+  let eval ((p, { PQ.f }) : 'a Prod.t) : 'a Q.t =
+    Q.map (f p) ~f:(function Left a -> a | Right a -> a)
+end
+
 (* [p,q] *)
 module Dirichlet_closure (P : Polynomial) (Q : Polynomial) : sig
   type 'a t = { f : 'b. 'b Q.t -> ('a * 'b) P.t }
@@ -59,4 +68,13 @@ end = struct
 
   let map { f } ~f:g =
     { f = (fun q -> P.map (f q) ~f:(fun (a, b) -> (g a, b))) }
+end
+
+(* P ⊗ [P,Q] → Q *)
+module Dirichlet_eval (P : Polynomial) (Q : Polynomial) = struct
+  module PQ = Dirichlet_closure (Q) (P)
+  module Prod = Dirichlet_product (P) (PQ)
+
+  let eval : type a. a Prod.t -> a Q.t = fun (Prod.T (p, { PQ.f }, combine)) ->
+    Q.map (f p) ~f:(fun (y, x) -> combine x y)
 end

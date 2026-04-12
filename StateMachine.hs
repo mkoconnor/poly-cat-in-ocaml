@@ -36,3 +36,11 @@ newtype DirichletClosure p q a = DirichletClosure (forall b. q b -> p (a, b))
 
 instance (Polynomial p) => Polynomial (DirichletClosure p q) where
   pmap f (DirichletClosure g) = DirichletClosure (\q -> pmap (\(a, b) -> (f a, b)) (g q))
+
+-- p × q^p → q
+cartesianEval :: (Polynomial q) => CartesianProduct p (CartesianClosure q p) a -> q a
+cartesianEval (CartesianProduct (p, CartesianClosure f)) = pmap (either id id) (f p)
+
+-- p ⊗ [p,q] → q
+dirichletEval :: (Polynomial q) => DirichletProduct p (DirichletClosure q p) a -> q a
+dirichletEval (T p (DirichletClosure f) combine) = pmap (\(y, x) -> combine x y) (f p)
