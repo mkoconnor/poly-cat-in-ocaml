@@ -1,0 +1,10 @@
+# OCaml build artifacts
+*.cmi
+*.cmx
+*.o
+
+# Haskell build artifacts
+*.hi
+
+# Editor config
+.ocamlformat
