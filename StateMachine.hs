@@ -1,4 +1,5 @@
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE RankNTypes #-}
 
 module StateMachine where
 
@@ -23,3 +24,9 @@ newtype SubstitutionProduct p q a = SubstitutionProduct (p (q a))
 
 instance (Polynomial p, Polynomial q) => Polynomial (SubstitutionProduct p q) where
   pmap f (SubstitutionProduct p) = SubstitutionProduct (pmap (pmap f) p)
+
+-- p^q
+newtype CartesianClosure p q a = CartesianClosure (forall b. q b -> p (Either a b))
+
+instance (Polynomial p) => Polynomial (CartesianClosure p q) where
+  pmap f (CartesianClosure g) = CartesianClosure (\q -> pmap (either (Left . f) Right) (g q))

@@ -36,4 +36,11 @@ type ('a, 'b) either = Left of 'a | Right of 'b
 (* p^q *)
 module Cartesian_closure (P : Polynomial) (Q : Polynomial) : sig
   type 'a t = { f : 'b. 'b Q.t -> ('a, 'b) either P.t }
-end = struct end
+
+  include Polynomial with type 'a t := 'a t
+end = struct
+  type 'a t = { f : 'b. 'b Q.t -> ('a, 'b) either P.t }
+
+  let map { f } ~f:g =
+    { f = (fun q -> P.map (f q) ~f:(function Left a -> Left (g a) | Right b -> Right b)) }
+end
