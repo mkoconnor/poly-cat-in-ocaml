@@ -30,3 +30,9 @@ newtype CartesianClosure p q a = CartesianClosure (forall b. q b -> p (Either a 
 
 instance (Polynomial p) => Polynomial (CartesianClosure p q) where
   pmap f (CartesianClosure g) = CartesianClosure (\q -> pmap (either (Left . f) Right) (g q))
+
+-- [p,q]
+newtype DirichletClosure p q a = DirichletClosure (forall b. q b -> p (a, b))
+
+instance (Polynomial p) => Polynomial (DirichletClosure p q) where
+  pmap f (DirichletClosure g) = DirichletClosure (\q -> pmap (\(a, b) -> (f a, b)) (g q))

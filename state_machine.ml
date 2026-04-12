@@ -42,5 +42,21 @@ end = struct
   type 'a t = { f : 'b. 'b Q.t -> ('a, 'b) either P.t }
 
   let map { f } ~f:g =
-    { f = (fun q -> P.map (f q) ~f:(function Left a -> Left (g a) | Right b -> Right b)) }
+    {
+      f =
+        (fun q ->
+          P.map (f q) ~f:(function Left a -> Left (g a) | Right b -> Right b));
+    }
+end
+
+(* [p,q] *)
+module Dirichlet_closure (P : Polynomial) (Q : Polynomial) : sig
+  type 'a t = { f : 'b. 'b Q.t -> ('a * 'b) P.t }
+
+  include Polynomial with type 'a t := 'a t
+end = struct
+  type 'a t = { f : 'b. 'b Q.t -> ('a * 'b) P.t }
+
+  let map { f } ~f:g =
+    { f = (fun q -> P.map (f q) ~f:(fun (a, b) -> (g a, b))) }
 end
