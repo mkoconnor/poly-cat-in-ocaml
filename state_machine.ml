@@ -22,3 +22,7 @@ end = struct
 
   let map (T (p, q, f')) ~f = T (p, q, fun a b -> f (f' a b))
 end
+
+(* p ⊳ q *)
+module Substitution_product (P : Polynomial) (Q : Polynomial) :
+  Polynomial with type 'a t = 'a P.t Q.t = struct end
