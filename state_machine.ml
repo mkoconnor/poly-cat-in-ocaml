@@ -30,3 +30,10 @@ module Substitution_product (P : Polynomial) (Q : Polynomial) :
 
   let map p ~f = P.map p ~f:(fun q -> Q.map q ~f)
 end
+
+type ('a, 'b) either = Left of 'a | Right of 'b
+
+(* p^q *)
+module Cartesian_closure (P : Polynomial) (Q : Polynomial) : sig
+  type 'a t = { f : 'b. 'b Q.t -> ('a, 'b) either P.t }
+end = struct end
