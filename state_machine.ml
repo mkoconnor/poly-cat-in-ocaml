@@ -1,22 +1,22 @@
-module type Polynomial = sig
+module type Poly = sig
   type 'a t
 
   val map : 'a t -> f:('a -> 'b) -> 'b t
 end
 
 (* p × q *)
-module Cartesian_product (P : Polynomial) (Q : Polynomial) :
-  Polynomial with type 'a t = 'a P.t * 'a Q.t = struct
+module Cartesian_product (P : Poly) (Q : Poly) :
+  Poly with type 'a t = 'a P.t * 'a Q.t = struct
   type 'a t = 'a P.t * 'a Q.t
 
   let map (p, q) ~f = (P.map p ~f, Q.map q ~f)
 end
 
 (* p ⊗ q *)
-module Dirichlet_product (P : Polynomial) (Q : Polynomial) : sig
+module Dirichlet_product (P : Poly) (Q : Poly) : sig
   type _ t = T : 'a P.t * 'b Q.t * ('a -> 'b -> 'c) -> 'c t
 
-  include Polynomial with type 'a t := 'a t
+  include Poly with type 'a t := 'a t
 end = struct
   type _ t = T : 'a P.t * 'b Q.t * ('a -> 'b -> 'c) -> 'c t
 
@@ -24,8 +24,8 @@ end = struct
 end
 
 (* p ⊳ q *)
-module Substitution_product (P : Polynomial) (Q : Polynomial) :
-  Polynomial with type 'a t = 'a Q.t P.t = struct
+module Substitution_product (P : Poly) (Q : Poly) :
+  Poly with type 'a t = 'a Q.t P.t = struct
   type 'a t = 'a Q.t P.t
 
   let map p ~f = P.map p ~f:(fun q -> Q.map q ~f)
@@ -34,10 +34,10 @@ end
 type ('a, 'b) either = Left of 'a | Right of 'b
 
 (* p^q *)
-module Cartesian_closure (P : Polynomial) (Q : Polynomial) : sig
+module Cartesian_closure (P : Poly) (Q : Poly) : sig
   type 'a t = { f : 'b. 'b Q.t -> ('a, 'b) either P.t }
 
-  include Polynomial with type 'a t := 'a t
+  include Poly with type 'a t := 'a t
 end = struct
   type 'a t = { f : 'b. 'b Q.t -> ('a, 'b) either P.t }
 
@@ -50,7 +50,7 @@ end = struct
 end
 
 (* P × Q^P → Q *)
-module Cartesian_eval (P : Polynomial) (Q : Polynomial) = struct
+module Cartesian_eval (P : Poly) (Q : Poly) = struct
   module PQ = Cartesian_closure (Q) (P)
   module Prod = Cartesian_product (P) (PQ)
 
@@ -59,10 +59,10 @@ module Cartesian_eval (P : Polynomial) (Q : Polynomial) = struct
 end
 
 (* [p,q] *)
-module Dirichlet_closure (P : Polynomial) (Q : Polynomial) : sig
+module Dirichlet_closure (P : Poly) (Q : Poly) : sig
   type 'a t = { f : 'b. 'b Q.t -> ('a * 'b) P.t }
 
-  include Polynomial with type 'a t := 'a t
+  include Poly with type 'a t := 'a t
 end = struct
   type 'a t = { f : 'b. 'b Q.t -> ('a * 'b) P.t }
 
@@ -71,7 +71,7 @@ end = struct
 end
 
 (* P ⊗ [P,Q] → Q *)
-module Dirichlet_eval (P : Polynomial) (Q : Polynomial) = struct
+module Dirichlet_eval (P : Poly) (Q : Poly) = struct
   module PQ = Dirichlet_closure (Q) (P)
   module Prod = Dirichlet_product (P) (PQ)
 
