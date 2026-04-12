@@ -4,6 +4,7 @@ module type Polynomial = sig
   val map : 'a t -> f:('a -> 'b) -> 'b t
 end
 
+(* p × q *)
 module Cartesian_product (P : Polynomial) (Q : Polynomial) :
   Polynomial with type 'a t = 'a P.t * 'a Q.t = struct
   type 'a t = 'a P.t * 'a Q.t
@@ -11,6 +12,7 @@ module Cartesian_product (P : Polynomial) (Q : Polynomial) :
   let map (p, q) ~f = (P.map p ~f, Q.map q ~f)
 end
 
+(* p ⊗ q *)
 module Dirichlet_product (P : Polynomial) (Q : Polynomial) : sig
   type _ t = T : 'a P.t * 'b Q.t * ('a -> 'b -> 'c) -> 'c t
 
