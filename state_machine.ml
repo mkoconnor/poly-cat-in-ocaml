@@ -25,4 +25,8 @@ end
 
 (* p ⊳ q *)
 module Substitution_product (P : Polynomial) (Q : Polynomial) :
-  Polynomial with type 'a t = 'a P.t Q.t = struct end
+  Polynomial with type 'a t = 'a Q.t P.t = struct
+  type 'a t = 'a Q.t P.t
+
+  let map p ~f = P.map p ~f:(fun q -> Q.map q ~f)
+end

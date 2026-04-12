@@ -17,3 +17,9 @@ data DirichletProduct p q c where
 
 instance (Polynomial p, Polynomial q) => Polynomial (DirichletProduct p q) where
   pmap f (T p q f') = T p q (\a b -> f (f' a b))
+
+-- p ⊳ q
+newtype SubstitutionProduct p q a = SubstitutionProduct (p (q a))
+
+instance (Polynomial p, Polynomial q) => Polynomial (SubstitutionProduct p q) where
+  pmap f (SubstitutionProduct p) = SubstitutionProduct (pmap (pmap f) p)
