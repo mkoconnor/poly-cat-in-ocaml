@@ -54,8 +54,8 @@ module Cartesian_eval (P : Poly) (Q : Poly) = struct
   module PQ = Cartesian_closure (Q) (P)
   module Prod = Cartesian_product (P) (PQ)
 
-  let eval ((p, { PQ.f }) : 'a Prod.t) : 'a Q.t =
-    Q.map (f p) ~f:(function Left a -> a | Right a -> a)
+  let eval : type a. a Prod.t -> a Q.t =
+   fun (p, { f }) -> Q.map (f p) ~f:(function Left a | Right a -> a)
 end
 
 (* [p,q] *)
@@ -76,6 +76,5 @@ module Dirichlet_eval (P : Poly) (Q : Poly) = struct
   module Prod = Dirichlet_product (P) (PQ)
 
   let eval : type a. a Prod.t -> a Q.t =
-   fun (Prod.T (p, { PQ.f }, combine)) ->
-    Q.map (f p) ~f:(fun (y, x) -> combine x y)
+   fun (T (p, { f }, combine)) -> Q.map (f p) ~f:(fun (y, x) -> combine x y)
 end
