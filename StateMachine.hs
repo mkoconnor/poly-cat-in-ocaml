@@ -3,6 +3,8 @@
 
 module StateMachine where
 
+-- The same as Functor, but renamed to make it clear that we're
+-- assuming it's polynomial
 class Poly p where
   pmap :: (a -> b) -> p a -> p b
 

@@ -75,6 +75,7 @@ module Dirichlet_eval (P : Poly) (Q : Poly) = struct
   module PQ = Dirichlet_closure (Q) (P)
   module Prod = Dirichlet_product (P) (PQ)
 
-  let eval : type a. a Prod.t -> a Q.t = fun (Prod.T (p, { PQ.f }, combine)) ->
+  let eval : type a. a Prod.t -> a Q.t =
+   fun (Prod.T (p, { PQ.f }, combine)) ->
     Q.map (f p) ~f:(fun (y, x) -> combine x y)
 end
